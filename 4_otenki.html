@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>東武動物公園の場所と天気</title>
+    <style>
+        
+        #view {
+            padding: 10px;
+            border: 4px solid #6f28bb;
+            width: 50%;
+            background-color: aliceblue;
+            height: 500px;
+            overflow: auto;
+        }
+
+        img {
+            width: 50px;
+        }
+
+        #view>div {
+            border-bottom: 1px dotted #3838ab;
+            font-size: medium;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        h2 {
+            font-size: x-large;
+            color: #f1071e;
+        }
+    </style>
+</head>
+<body>
+    <style>
+        html { height: 30%; }
+        body { height: 100% }
+        #map { height: 100%; width: 100%}
+
+    </style>
+    </head>
+    
+    <body>
+        <div id="map"></div>
+
+
+        <h1>
+            <span id="area"></span> 動物公園のお天気!
+        </h1>
+        <div class="flex">
+            <div id="view"></div>
+        </div>
+
+
+
+
+        <script
+        src='https://www.bing.com/api/maps/mapcontrol?key=Aj4h33uBQZbvSOkZuwmmAtzQoVQoO4z3ftL_WJuBwYiwOwNy5jE_Yia0v7Brw5j8'
+        async defer></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+        <script>
+        //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+        //MAP表示処理
+        //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+        let map;
+        //Info を生成する関数の定義
+        function Pushpin(lat, lng, map) {
+            const location = new Microsoft.Maps.Location(lat, lng);
+            const pin = new Microsoft.Maps.Pushpin(location, {
+                color: "navy",
+                visible: "true",
+            });
+            map.entities.push(pin);
+        }
+
+        function mapInit(position) {
+            console.log(position.coords.latitude);
+            console.log(position.coords.longitude);
+            const lat = "36.023373";
+            const lng = "139.703110";
+
+            map = new Microsoft.Maps.Map("#map", {
+                center: {
+                    latitude: lat,
+                    longitude: lng,
+                },
+                zoom: 15, //1-20で決める、1は世界地図、20は近所の地図
+            });
+            Pushpin(lat, lng, map);
+        }
+
+        function showError(error) {
+            const errorMessages = [
+                "位置情報が許可されてません",
+                "現在位置を特定できません",
+                "位置情報を取得する前にタイムアウトになりました",
+            ];
+            alert(`error:${errorMessages[error.code - 1]}`);
+        }
+        const option = {
+            enableHighAccuracy: true,
+            maximumAge: 10000, //ミリ秒 10*1000
+            timeout: 100000,
+        }
+        navigator.geolocation.getCurrentPosition(mapInit, showError, option);
+        </script>
+
+    <script>
+            //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+            //MAP表示処理
+            //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+            const key = "e51794c4858e0488bb16d06977d7344b";  //***自分のKEYを！！！！！！！！！！！！！！！***
+            const lat = "36.023373";   //原宿の緯度
+            const lon = "139.703110";  //原宿の軽度
+            const icon = "http://openweathermap.org/img/wn/"; //ICONにアクセスするURL
+
+            //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+            //OpenWeatherAPI（天気情報を取得）5DAY/3hour
+            //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+            const url = 'https://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + '&appid=' + key + '&lang=ja';
+            $.ajax({
+                url:url, //ここにアクセスしたい
+                type:'get',
+                cache:false, //trueだと昔のが出る
+                dataType:'json'
+            }).done(function(data){
+            //console.log(data.list[0].dt_txt); //オブジェクト変数を確認
+            console.log(data); //オブジェクト変数を確認
+
+                let html =""; //空の文字列
+                for(let i=0; i<data.list.length; i++){ //配列の限りデータが回る 
+                    html += ` 
+                        <div>
+                            <div>${data.list[i].dt_txt}</div>
+                            <div>${data.list[i].weather[0].main}</div>
+                            <div>${data.list[i].weather[0].description}</div>
+                            <div><img src="${icon + data.list[i].weather[0].icon}@2x.png">
+                        </div>
+                    `;
+                }
+
+                //最後に作成したHTMLを全部埋め込む
+                $("#view").append(html);
+
+                //場所
+                $("#area").html(data.city.name)
+            });
+
+        </script>
+</body>
+</html>
